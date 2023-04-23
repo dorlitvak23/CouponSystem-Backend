@@ -34,12 +34,13 @@ public class AdminService extends ClientService {
 
 	public Company addCompany(UUID token, Company company) throws CouponsSystemException {
 		tokenManager.getAdminId(token);
-		if (companyRepo.existsByNameOrEmail(company.getName(), company.getPassword())) {
-			throw new CouponsSystemException("This company's already exist");
+		if (companyRepo.existsByName(company.getName())) {
+			throw new CouponsSystemException("This name is already taken");
+		} else if (companyRepo.existsByEmail(company.getEmail())) {
+			throw new CouponsSystemException("This email is already taken");
 		} else {
-			companyRepo.save(company);
+			return companyRepo.save(company);
 		}
-		return company;
 	}
 
 	public Company updateCompany(UUID token, Company company) throws CouponsSystemException {
@@ -50,6 +51,9 @@ public class AdminService extends ClientService {
 		if (!(updatedCompany.getName().equals(company.getName()))) {
 			throw new CouponsSystemException("Updated failed, can't change company's name");
 		}
+		if (companyRepo.existsByEmailAndIdNot(company.getEmail(), company.getId())) {
+			throw new CouponsSystemException("Updated failed, can't change to existing email adress of other company");
+		}
 		updatedCompany.setEmail(company.getEmail());
 		updatedCompany.setPassword(company.getPassword());
 		return companyRepo.saveAndFlush(updatedCompany);
@@ -59,8 +63,9 @@ public class AdminService extends ClientService {
 		tokenManager.getAdminId(token);
 
 		if (!(companyRepo.existsById(companyID))) {
-			throw new CouponsSystemException("This company isn't exist");
+			throw new CouponsSystemException("This company isn't exists");
 		}
+		couponRepo.deletePurchasesByCompanyId(companyID);
 		companyRepo.deleteById(companyID);
 	}
 
@@ -87,7 +92,9 @@ public class AdminService extends ClientService {
 
 	public Customer updateCustomer(UUID token, Customer customer) throws CouponsSystemException {
 		tokenManager.getAdminId(token);
-
+		if (customerRepo.existsByEmailAndIdNot(customer.getEmail(), customer.getId())) {
+			throw new CouponsSystemException("Updated failed, can't change to existing email adress of other company");
+		}
 		customerRepo.saveAndFlush(customer);
 		return customer;
 	}

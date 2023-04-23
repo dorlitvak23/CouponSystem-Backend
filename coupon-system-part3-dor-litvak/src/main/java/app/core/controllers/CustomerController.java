@@ -36,7 +36,7 @@ public class CustomerController {
 		this.customerService.purchaseCoupon(token, couponId);
 	}
 
-	@GetMapping("/customer/coupons")
+	@GetMapping("/coupons")
 	@ResponseStatus(HttpStatus.OK)
 	public List<Coupon> getCustomerCoupons(@RequestHeader("Authorization") UUID token) throws CouponsSystemException {
 		return this.customerService.getCustomerCoupons(token);

@@ -35,15 +35,17 @@ public class CompanyService extends ClientService {
 		int companyId = tokenManager.getCompanyId(token);
 		if (couponRepo.existsByCompanyIdAndTitle(companyId, coupon.getTitle())) {
 			throw new CouponsSystemException("this coupon is already existed");
-		} else {
-			companyRepo.findById(companyId).get().addCoupon(coupon);
-			couponRepo.save(coupon);
 		}
-		return coupon;
+
+		Company company = companyRepo.findById(companyId)
+				.orElseThrow(() -> new CouponsSystemException("company of coupon  not found"));
+		coupon.setCompany(company);
+		return couponRepo.save(coupon);
+
 	}
 
 	public Coupon updateCoupon(UUID token, Coupon coupon, int couponID) throws CouponsSystemException {
-		tokenManager.getCompanyId(token);
+		int companyId = tokenManager.getCompanyId(token);
 
 		Coupon updatedCoupon = couponRepo.findById(coupon.getId())
 				.orElseThrow(() -> new CouponsSystemException("Coupon not found"));
@@ -55,6 +57,9 @@ public class CompanyService extends ClientService {
 		updatedCoupon.setAmount(coupon.getAmount());
 		updatedCoupon.setPrice(coupon.getPrice());
 		updatedCoupon.setImage(coupon.getImage());
+//		Company company = companyRepo.findById(companyId).orElseThrow(()-> new CouponsSystemException("company of coupon  not found"));
+//		updatedCoupon.setCompany(company);
+
 		return couponRepo.saveAndFlush(updatedCoupon);
 	}
 

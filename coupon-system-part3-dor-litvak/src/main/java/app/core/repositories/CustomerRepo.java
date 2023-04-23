@@ -16,4 +16,6 @@ public interface CustomerRepo extends JpaRepository<Customer, Integer> {
 
 	public boolean existsByIdAndCouponsId(int customerId, int couponId);
 
+	boolean existsByEmailAndIdNot(String email, int id);
+
 }

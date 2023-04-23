@@ -12,6 +12,10 @@ public interface CompanyRepo extends JpaRepository<Company, Integer> {
 
 	Optional<Company> findByEmailAndPassword(String email, String password);
 
-	public boolean existsByNameOrEmail(String name, String email);
+	public boolean existsByName(String name);
+
+	public boolean existsByEmail(String email);
+
+	boolean existsByEmailAndIdNot(String email, int id);
 
 }

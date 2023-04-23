@@ -36,7 +36,7 @@ public class Coupon {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn
 	@JsonIgnore
 	private Company company;

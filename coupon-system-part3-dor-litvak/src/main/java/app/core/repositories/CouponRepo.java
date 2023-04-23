@@ -2,6 +2,8 @@ package app.core.repositories;
 
 import java.util.List;
 
+import javax.transaction.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -37,6 +39,10 @@ public interface CouponRepo extends JpaRepository<Coupon, Integer> {
 	@Query(value = "delete from `coupon` where `end_date` < now();", nativeQuery = true)
 	void deleteExpiredCoupons() throws CouponsSystemException;
 
-}
+	@Transactional
+	@Modifying
+	@Query(value = "DELETE FROM customers_vs_coupons WHERE coupon_id IN "
+			+ "(SELECT id FROM coupon WHERE company_id = ?1)", nativeQuery = true)
+	void deletePurchasesByCompanyId(int companyId);
 
-//DATE('2023-12-31'
+}
